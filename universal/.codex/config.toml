@@ -24,13 +24,22 @@ multi_agent = true
 multi_agent_v2 = true
 steer = true
 personality = false
-apps = false
+apps = true
+in_app_browser = true
+browser_use = true
+computer_use = true
 plugins = true
 js_repl = true
 code_mode = true
 codex_hooks = true
 memories = true
 tui_app_server = false
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
 
 [plugins."github@openai-curated"]
 enabled = false
