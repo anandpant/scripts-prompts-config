@@ -63,6 +63,7 @@ Both Bash and Zsh configurations include:
 - **Pi/OMP Configuration**: Tracked templates for `~/.pi/agent/settings.json` and `~/.omp/agent/config.yml` with Fireworks AI provider support (models: `fireworks-openai/accounts/fireworks/routers/kimi-k2p5-turbo`, `fireworks-anthropic/accounts/fireworks/routers/kimi-k2p5-turbo`). Keep `FIREWORKS_API_KEY` local-only in `~/.shell_secrets`
 - **OMP MCP Scope**: `osx/scripts/configure_omp_mcp_scope.sh` keeps user-level Windsurf MCP empty (`~/.codeium/windsurf/mcp_config.json`), creates the Larry generators MCP only at `~/Development/codestrap/.windsurf/mcp_config.json`, removes the Vercel Claude plugin cache, and clears stale OMP MCP cache entries. Keep `LARRY_API_KEY` local-only; export it before running the script if you want it embedded in the generated local Codestrap config.
 - **Pi Extensions**: `universal/.pi/agent/extensions/` tracks portable global pi extensions, including `/exit` as an alias for `/quit` and `/merged` for post-merge verification follow-up
+- **Pi Skills**: `universal/install-pi-skills.sh` removes obsolete `~/.pi` links to skills Pi already discovers in `~/.agents`, then installs the intentionally Pi-specific Herdr variant as `herdr-pi` to avoid name collisions
 
 ### Zsh-Specific Enhancements
 
@@ -99,25 +100,27 @@ scripts-prompts-config/
 │       ├── configure_pnpm_defaults.sh
 │       ├── configure_screenshot_shortcuts.sh
 │       └── update_packages.sh
-PX:└── universal/                 # Cross-platform scripts, hooks, and agent configs
-TV:    ├── codex-shell-tools.sh
-PB:    ├── install-agent-reasoning-shortcuts.sh
-PB:    ├── purge-omc-omx.sh
-PB:    ├── convert_to_svg.sh
-RT:    ├── kill-dev.sh
-RT:    ├── optimize_logos.sh
-PK:    ├── pi-google-code-assist-antigravity-troubleshooting.md
-JK:    ├── .pi/agent/
-QV:    │   ├── settings.json.template    # Pi agent configuration template
-EX:    │   └── extensions/
-AL:    │       ├── exit-command.ts       # Adds /exit alias for quitting pi
-AL:    │       ├── merged.ts             # Adds /merged post-merge follow-up prompt
-AL:    │       └── thinking-level-shortcuts.ts # Adds Alt+. / Alt+, reasoning controls
-RM:    ├── .omp/agent/
-HQ:    │   └── config.yml.template         # OMP agent configuration template
-RT:    └── git-hooks/
-YQ:        ├── commit-msg
-BN:        └── README.md
+└── universal/                 # Cross-platform scripts, hooks, and agent configs
+    ├── codex-shell-tools.sh
+    ├── install-agent-reasoning-shortcuts.sh
+    ├── install-pi-skills.sh
+    ├── purge-omc-omx.sh
+    ├── convert_to_svg.sh
+    ├── kill-dev.sh
+    ├── optimize_logos.sh
+    ├── pi-google-code-assist-antigravity-troubleshooting.md
+    ├── .pi/agent/
+    │   ├── settings.json.template    # Pi agent configuration template
+    │   ├── extensions/
+    │   │   ├── exit-command.ts       # Adds /exit alias for quitting pi
+    │   │   ├── merged.ts             # Adds /merged post-merge follow-up prompt
+    │   │   └── thinking-level-shortcuts.ts # Adds Alt+. / Alt+, reasoning controls
+    │   └── skills/herdr-pi/          # Pi-specific Herdr workflow
+    ├── .omp/agent/
+    │   └── config.yml.template       # OMP agent configuration template
+    └── git-hooks/
+        ├── commit-msg
+        └── README.md
 ```
 
 ## Security
