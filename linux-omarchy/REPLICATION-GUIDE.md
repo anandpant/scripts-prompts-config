@@ -49,6 +49,17 @@ eval "$(starship init zsh)"
 eval "$(mise activate zsh)"
 ```
 
+### Launch desktop IDEs from persistent terminals
+
+Herdr and other persistent terminal hosts can start before Hyprland and retain a shell environment without the active Wayland display. Source the shared launcher in both zsh and bash so `zed`, `zeditor`, `cursor`, `code`, `code-insiders`, and `subl` launch through the graphical UWSM session:
+
+```bash
+# ~/.zshrc and ~/.bashrc
+if [ -f "$HOME/scripts-prompts-config/universal/uwsm-ide-shell-tools.sh" ]; then
+  . "$HOME/scripts-prompts-config/universal/uwsm-ide-shell-tools.sh"
+fi
+```
+
 ### Match the macOS git prompt
 Ghostty is not the source of the branch details. The prompt comes from `starship`.
 
