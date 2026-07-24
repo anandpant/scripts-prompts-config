@@ -38,6 +38,9 @@ export CODEX_FEATURE_MODE=nondefault
 if [[ -f "$HOME/scripts-prompts-config/universal/codex-shell-tools.sh" ]]; then
   source "$HOME/scripts-prompts-config/universal/codex-shell-tools.sh"
 fi
+if [[ -f "$HOME/scripts-prompts-config/universal/uwsm-ide-shell-tools.sh" ]]; then
+  source "$HOME/scripts-prompts-config/universal/uwsm-ide-shell-tools.sh"
+fi
 
 alias pbcopy='wl-copy'
 alias pbpaste='wl-paste'
