@@ -10,7 +10,8 @@ This repository exists to keep working configs, scripts, and prompts reproducibl
 
 ## Repo Focus
 
-- Prefer `osx/` and `linux-omarchy/` for current work.
+- Prefer `osx/`, `linux-omarchy/`, and `dgxspark/` for current work.
+- Keep DGX Spark changes minimal: reuse `universal/` via scripts or symlinks and store only genuine Ubuntu/ARM64 or hardware differences under `dgxspark/`.
 
 ## Change Rules
 

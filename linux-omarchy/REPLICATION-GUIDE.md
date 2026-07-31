@@ -86,13 +86,21 @@ cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/starship.toml ~/
 
 ## 2. Useful Aliases
 
-Add to `~/.zshrc`:
+Configure macOS-style `pbcopy`/`pbpaste` for both Bash and Zsh:
 
 ```bash
-# Clipboard (macOS-style)
-alias pbcopy='wl-copy'
-alias pbpaste='wl-paste'
+./linux-omarchy/scripts/setup-clipboard.sh
+```
 
+The setup detects the active display backend instead of assuming Wayland. It uses
+`wl-clipboard` under Wayland and `xclip`/`xsel` under X11. On managed Ubuntu/Debian
+hosts without sudo, it can extract the distro's `xclip` package into
+`~/.local/bin`. The script installs shell hooks idempotently and verifies a
+clipboard round trip.
+
+Add the remaining aliases to `~/.zshrc`:
+
+```bash
 # Better ls (requires eza)
 ls() { env -u NO_COLOR command eza -lh --group-directories-first --icons=auto "$@"; }
 alias lsa='ls -a'
