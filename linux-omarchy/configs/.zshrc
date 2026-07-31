@@ -20,15 +20,14 @@ if [[ $- == *i* ]]; then
   bindkey -M viins '^[[200~' bracketed-paste
 fi
 
-# zoxide replaces cd (learns your frequently used directories)
-eval "$(zoxide init zsh --cmd cd)"
+# Shared guarded initialization for zoxide, starship, mise, fzf, and atuin.
+if [[ -f "$HOME/scripts-prompts-config/universal/qol-shell-tools.sh" ]]; then
+  source "$HOME/scripts-prompts-config/universal/qol-shell-tools.sh"
+fi
 
 # zsh-history-substring-search keybindings (UP/DOWN arrow to search history)
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
-eval "$(starship init zsh)"
-
-eval "$(mise activate zsh)"
 export PATH="/home/anandpant/.cache/.bun/bin:$PATH"
 
 export GOPATH="$HOME/go"
@@ -42,8 +41,10 @@ if [[ -f "$HOME/scripts-prompts-config/universal/uwsm-ide-shell-tools.sh" ]]; th
   source "$HOME/scripts-prompts-config/universal/uwsm-ide-shell-tools.sh"
 fi
 
-alias pbcopy='wl-copy'
-alias pbpaste='wl-paste'
+# Portable clipboard commands: Wayland uses wl-clipboard; X11 uses xclip/xsel.
+if [[ -f "$HOME/scripts-prompts-config/universal/clipboard-shell-tools.sh" ]]; then
+  source "$HOME/scripts-prompts-config/universal/clipboard-shell-tools.sh"
+fi
 
 # File system (from omarchy)
 alias ls='eza -lh --group-directories-first --icons=auto'

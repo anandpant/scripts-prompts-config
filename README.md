@@ -4,7 +4,8 @@ A comprehensive configuration management system for development environments, su
 
 ## Current Platform Focus
 
-- Primary: `osx/` and `linux-omarchy/`
+- Primary: `osx/`, `linux-omarchy/`, and `dgxspark/`
+- Keep portable behavior in `universal/`; `dgxspark/` contains only Ubuntu/ARM64 differences and shared entry-point symlinks.
 
 ## Quick Start
 
@@ -93,6 +94,7 @@ scripts-prompts-config/
 │   ├── .shell_secrets.template
 │   └── scripts/
 │       └── emulate_osx_setups_arch_permanent.sh
+├── dgxspark/                  # Minimal Ubuntu/ARM64 differences and shared links
 ├── osx/                       # macOS configurations/scripts
 │   ├── README.md
 │   └── scripts/

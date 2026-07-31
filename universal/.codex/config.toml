@@ -13,6 +13,8 @@ hide_rate_limit_model_nudge = true
 
 [tui]
 theme = "catppuccin-frappe"
+status_line = ["model-with-reasoning", "current-dir", "weekly-limit", "used-tokens"]
+status_line_use_colors = true
 
 [mcp_servers.exa]
 url = "https://mcp.exa.ai/mcp?tools=web_search_exa,web_search_advanced_exa,get_code_context_exa,crawling_exa"

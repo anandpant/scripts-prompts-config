@@ -1,0 +1,6 @@
+# DGX/Linux override: pnpm's global bin directory is not macOS ~/Library/pnpm.
+globalBinDir: ~/.local/share/pnpm
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude: '["@nyrra/*","@openontology/*","@openai/*","@shpitdev/*","@sketchi-app/*","@pnpm/*"]'
+blockExoticSubdeps: true
+strictDepBuilds: true

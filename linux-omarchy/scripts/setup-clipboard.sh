@@ -1,0 +1,1 @@
+../../universal/setup-clipboard.sh
