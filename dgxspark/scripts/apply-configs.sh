@@ -24,6 +24,7 @@ add_shell_source() {
 
 "$repo_root/dgxspark/scripts/setup-clipboard.sh"
 "$repo_root/dgxspark/scripts/install-qol-tools.sh"
+"$repo_root/dgxspark/scripts/install-blesh.sh"
 
 backup_install "$repo_root/linux-omarchy/configs/starship.toml" "$HOME/.config/starship.toml"
 "$repo_root/universal/install-agent-reasoning-shortcuts.sh"
@@ -39,6 +40,7 @@ backup_install "$repo_root/universal/.config/opencode/tui.jsonc" "$HOME/.config/
 backup_install "$repo_root/universal/.config/opencode/tui-plugins/variant-reverse.js" "$HOME/.config/opencode/tui-plugins/variant-reverse.js"
 backup_install "$repo_root/universal/.cursor/settings.json" "$HOME/.cursor/settings.json"
 backup_install "$repo_root/dgxspark/configs/pnpm-config.yaml" "$HOME/.config/pnpm/config.yaml"
+backup_install "$repo_root/dgxspark/configs/blesh-init.sh" "$HOME/.config/blesh/init.sh"
 backup_install "$repo_root/linux-omarchy/configs/tmux.conf" "$HOME/.tmux.conf"
 
 mkdir -p "$HOME/.config/nvim"
@@ -48,6 +50,10 @@ for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
   add_shell_source "$rc" 'Shared guarded CLI initialization' 'universal/qol-shell-tools.sh'
   add_shell_source "$rc" 'Shared Codex feature-drift helper' 'universal/codex-shell-tools.sh'
 done
+
+if ! grep -Fq '/blesh/ble.sh' "$HOME/.bashrc"; then
+  printf '\n# Bash autosuggestions, completion menus, and syntax highlighting\n[[ $- == *i* && -r "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh" ]] && source -- "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh"\n' >> "$HOME/.bashrc"
+fi
 
 if [ ! -d "$HOME/.tmux/plugins/tpm/.git" ]; then
   mkdir -p "$HOME/.tmux/plugins"
