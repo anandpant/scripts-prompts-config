@@ -24,10 +24,11 @@ and entry points.
 This installs architecture-matched CLI releases through `mise`, applies the
 shared Starship, Claude/Pi, Codex, OpenCode, Cursor, Neovim, and tmux configs,
 sets Linux pnpm security defaults, and preserves replaced files as timestamped
-backups. It also installs pinned `ble.sh` for Bash completion menus,
-autosuggestions, and live syntax highlighting: resolved commands are visibly
-colored while unknown commands are bold red. It invokes the clipboard setup
-below as part of the run.
+backups. It also installs pinned `ble.sh` with deliberately minimal Bash
+behavior: normal tab completion, no ghost suggestions or completion menus, and
+resolved command words shown in green while everything else keeps the
+terminal's default color. It invokes the clipboard setup below as part of the
+run.
 
 ### Clipboard only
 

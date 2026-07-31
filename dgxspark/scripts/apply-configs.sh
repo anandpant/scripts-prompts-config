@@ -52,7 +52,7 @@ for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
 done
 
 if ! grep -Fq '/blesh/ble.sh' "$HOME/.bashrc"; then
-  printf '\n# Bash autosuggestions, completion menus, and syntax highlighting\n[[ $- == *i* && -r "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh" ]] && source -- "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh"\n' >> "$HOME/.bashrc"
+  printf '\n# Minimal Bash command-validity highlighting\n[[ $- == *i* && -r "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh" ]] && source -- "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh"\n' >> "$HOME/.bashrc"
 fi
 
 if [ ! -d "$HOME/.tmux/plugins/tpm/.git" ]; then

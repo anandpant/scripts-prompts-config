@@ -18,4 +18,4 @@ git -C "$tmp/ble.sh" checkout -q --detach FETCH_HEAD
 git -C "$tmp/ble.sh" submodule update --init --recursive --depth 1
 make -s --no-print-directory -C "$tmp/ble.sh" install INSDIR="$install_dir" USE_DOC=no
 printf '%s\n' "$BLESH_COMMIT" > "$install_dir/.dgxspark-commit"
-printf 'Installed ble.sh command completion, autosuggestions, and syntax highlighting.\n'
+printf 'Installed ble.sh for minimal command-validity highlighting.\n'
