@@ -21,7 +21,9 @@
 ## Agent Model Selection
 
 - Use Codex `gpt-5.6-sol` for delegated planning, implementation, and review by default. Do not launch older Codex models such as `gpt-5.5`.
-- Set reasoning effort explicitly when launching an agent: use `low` or `medium` for simple, bounded work and `xhigh` for hard, broad, or high-risk work.
+- Set reasoning effort explicitly when launching an agent. Default to `medium`; use `low` for simple, bounded work and escalate to `high` for hard, broad, or high-risk work.
+- Never use `xhigh` with `gpt-5.6-sol`. On Sol it is roughly 3% better than `high` for twice the tokens, so it never pays for itself, and reaching for it usually means the task was scoped too broadly. Split the work instead.
+- Reasoning effort does not inherit. An agent launched at `medium` can spawn its own sub-agents and pick their effort independently, so state the effort in every delegation brief rather than relying on launch flags alone. Verify with `herdr pane read <pane_id> --lines 4`; the status line shows model and effort.
 - Claude models, including Opus, are optional only for genuinely UI/UX-heavy work. Keep non-UI implementation and review on Codex `gpt-5.6-sol`.
 
 ## Quality & Testing
