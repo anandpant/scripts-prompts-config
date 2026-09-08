@@ -51,7 +51,7 @@ If you can run Node tooling locally, render diagrams via Mermaid CLI. This catch
 
 ```bash
 # Render a single Mermaid file:
-npx -y @mermaid-js/mermaid-cli -i diagram.mmd -o diagram.svg
+pnpm dlx @mermaid-js/mermaid-cli -i diagram.mmd -o diagram.svg
 ```
 
 If your Mermaid is embedded in a Markdown file, use this skill’s helper script:
@@ -60,7 +60,7 @@ If your Mermaid is embedded in a Markdown file, use this skill’s helper script
 node scripts/validate_mermaid_in_md.mjs path/to/issue-body.md
 ```
 
-This extracts all Mermaid blocks and tries to render them. If `npx` is unavailable, the script prints fallback instructions.
+This extracts all Mermaid blocks and tries to render them. If `pnpm`, `npx`, and `bunx` are unavailable, the script prints fallback instructions.
 
 ## Authoring Tips
 

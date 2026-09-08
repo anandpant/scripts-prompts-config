@@ -1,63 +1,41 @@
-# Agent Guidelines
+# Agent guidelines
 
-## Autonomy & Progress
+## Working together
 
-- Work independently to unblock yourself: research, review the codebase, iterate on failures, and create targeted tests when useful.
-- Once I say "go", proceed without status updates until you're finished and there's a PR ready for review that has been thoroughly tested.
+Own the requested outcome. Investigate before guessing, keep changes focused, and continue authorized work through appropriate verification and handoff. Be succinct and direct; disagree when the evidence warrants it. Carry forward authorization for the same action and scope rather than repeatedly asking. Ask only for missing decisions or authority that materially changes the work. Report meaningful progress and blockers without repetitive narration.
 
-## Engineering Ownership (SDLC)
+Prefer the simplest correct solution. Preserve the user's intended meaning and audience. Remove superseded approaches as part of an intentional replacement; avoid unrequested compatibility machinery or unrelated refactors. Apply the concise unslop guidance to writing without adding a forced personality.
 
-- Own the outcome end-to-end: correctness, reliability, and maintainability.
-- Prefer clean, readable code: good structure/grouping, no dead code.
-- Make low-risk refactors as you go; avoid high-risk/complex refactors unless necessary.
+## Environment, delegation, and models
 
-## Delegated Delivery
+Stay in the environment where the user started. Codex-app work defaults to visible Codex threads and native worktrees when useful. Herdr work uses its panes when useful. Use Herdr from Codex when explicitly requested or when terminal agents, another provider, or remote terminal ownership need it. Delegation is optional; use it for independently useful work rather than as a mandatory ceremony.
 
-- After aligning with the user on large product or feature buckets, act as the delivery owner and delegate implementation work to an agent in a dedicated Herdr worktree.
-- When implementation is ready, run a separate independent review agent. Route valid findings back through implementation, rerun affected and required tests, and keep iterating until review and CI are green.
-- Use logical Graphite PRs or stacks for meaningful work. Once review and CI are green, merge autonomously with `gt merge`, verify the resulting `main` state and production deployment or runtime surfaces, and clean up completed Herdr worktrees and branches.
-- Do not require the user to review or merge individual PRs. Escalate only genuine product or architecture decisions, unavailable credentials, or blockers that cannot be resolved independently.
+Keep one owner for each shared output. Use Git worktrees only within a real repository and when source isolation helps. Video, audio, slides, research, and other creative work can stay in the project folder with distinct outputs. Do not initialize Git or require branches, worktrees, PRs, or code reviews merely because an artifact uses a script.
 
-## Agent Model Selection
+Use Astra for most real work and new Codex workers. Preserve the user's explicit model and effort choices; use Sol for bounded work the user selects. Choose reasoning effort for uncertainty and scope, preserving deliberately selected higher effort. Do not force a different model for editorial or browser work. Prefer deterministic watchers for unchanged CI state.
 
-- Use Codex `gpt-5.6-sol` for delegated planning, implementation, and review by default. Do not launch older Codex models such as `gpt-5.5`.
-- Set reasoning effort explicitly when launching an agent. Default to `medium`; use `low` for simple, bounded work and escalate to `high` for hard, broad, or high-risk work.
-- Never use `xhigh` with `gpt-5.6-sol`. On Sol it is roughly 3% better than `high` for twice the tokens, so it never pays for itself, and reaching for it usually means the task was scoped too broadly. Split the work instead.
-- Reasoning effort does not inherit. An agent launched at `medium` can spawn its own sub-agents and pick their effort independently, so state the effort in every delegation brief rather than relying on launch flags alone. Verify with `herdr pane read <pane_id> --lines 4`; the status line shows model and effort.
-- Claude models, including Opus, are optional only for genuinely UI/UX-heavy work. Keep non-UI implementation and review on Codex `gpt-5.6-sol`.
+Use capabilities actually available in this session. Prefer visible threads to hidden subagents, and do not silently substitute hidden workers or force Herdr when thread tools are absent. Continue useful independent work and state a capability limitation when it affects requested delegation. In a Herdr-owned workflow, follow its workspace registration, send, wait, and ownership contract. Do not create nested delegation without a concrete need and assigned ownership.
 
-## Quality & Testing
+## Verification and review
 
-- Reproduce defects before fixing.
-- If a test should have caught it, add/adjust tests alongside the fix (skip only for truly trivial syntax-only issues).
+Reproduce meaningful defects before fixing them and add behavioral regression coverage where a test should have caught the bug. Run affected checks and required gates; do not rerun unchanged suites or expand testing without a new concern. Inspect the changed real entry point. A passing build or fixture does not prove hosted behavior, asset fidelity, or visual quality.
 
-## Communication Norms
+Review substantive code changes against the smallest correct base: the immediate stack parent, main for standalone work, or the last reviewed head for follow-up changes. Recheck findings and review new code when its risk warrants it. Do not repeatedly review unchanged patches; check stable patch identity after metadata-only rewrites. Independent reviewers stay read-only unless explicitly reassigned. For creative work, review content, rendering, playback, and exports as applicable; code review is optional unless material runtime risk warrants it.
 
-- Disagree when you think I'm wrong; don't flatter or rubber-stamp.
-- Be succinct by default; I'll ask if I want more detail.
+Use agent-browser for public/local browser work and an available supported integration for existing signed-in sessions. Follow the selected tool's current contract. Verify the actual interaction and rendered result, including real console/page-error collection where applicable. Keep one owner per browser session or watcher.
 
-## Simplicity & Maintainability
+## Frontend
 
-- Avoid hacks and messy code; do things "right" without adding unnecessary behavior/complexity.
-- If my request is overly elaborate, propose a simpler option.
-- Prefer readability: descriptive names; docstrings are fine to capture intent/"why", not to justify existence.
-- Do not recommend solutions that add complexity for backwards compatibility unless explicitly requested.
-- If we pivot approaches we must deprecate the old approach completely and the cleanup shouyld be done as part of the change
+Use the frontend-design skill for UI work. No all-caps eyebrow labels. Prefer recognizable icons, succinct user-facing copy, clear hierarchy, and progressive disclosure. Keep accessible names and enough labels to avoid ambiguity; never hide errors or required decisions to reduce clutter.
 
-## Tools
+When a maintained TanStack solution fits a frontend capability, use it by default. Avoid direct useEffect/useLayoutEffect in product code; use framework lifecycle/data primitives, event handlers, or useSyncExternalStore. Isolate unavoidable third-party synchronization behind one reviewed adapter with an explicit lint exception.
 
-- you have: gh, vercel, gcloud, convex, d3k, sentry-cli, and others installed in the cli. most projects arent public and need to be accessed with authed tools.
-- When sending a prompt or instruction through Herdr, use `herdr pane run <pane_id> "<prompt>"`; it submits the text and `Enter` atomically. Do not use `herdr agent send` for prompts because it intentionally writes literal text without submitting it. Use `agent send` only when unsubmitted text is explicitly desired, and verify the target pane after every send.
+## Tools and ownership
 
-## Git Workflow
+Check command availability before relying on a global CLI. Durable machine changes belong in the machine's configuration repository; use project-local tools for one-off repo work. Keep broader plugins and specialist skills scoped to projects that need them. Preserve credentials and unrelated user work.
 
-- Avoid leaving random stashes, local-only branches, or other local-only state behind when the task is complete.
-- Avoid important files existing only on the current machine. If a file matters, commit it and get it into the remote; otherwise delete it or add an appropriate `.gitignore` rule.
-- Prefer Graphite (`gt`) for anything beyond an inconsequential change: create/update logical stacked PRs instead of pushing directly to trunk or leaving meaningful work only local.
-- Prefer logical PRs that move complete, proven functionality into the remote. Do not split work into tiny PRs just to appear done.
-- If you temporarily stash or branch to get work done, clean that up before finishing unless the user explicitly asks to keep it around.
-- Use semantic branch prefixes that describe the work, such as `feat/`, `fix/`, `docs/`, `refactor/`, `chore/`, or `test/`. Do not use `codex/` as an agent-signature branch prefix.
+## Git work
 
-## Memory
+Apply branch/PR rules only to owned Git work. Inspect state first and preserve unrelated changes without making their publication or deletion a prerequisite for another task. Start a new branch from the updated primary checkout; preserve assigned worktrees and stack parents. Prefer Graphite when configured, with conventional branch/title prefixes and reviewable PRs. Verify actual CI/review/merge state instead of assuming dashboard settings. Complete merge when authorized and gates are satisfied, then clean up the owned branch/worktree through its originating environment. A read-only audit does not require branch changes or a PR.
 
-- Store temporary data in repository `.memory/` directory (gitignored, but add a .ignore with !.memory/** so the agent can still view it). Create the .memory folder if it doesn't exist, do not use /tmp
+Store temporary task evidence in .memory/ under the project, with .ignore allowing it to be inspected. Creative deliverables belong in their project directories. Do not change persistent memory without an explicit user request.

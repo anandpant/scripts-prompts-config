@@ -1,78 +1,22 @@
-# Repo-Backed Agent Skills
+# Repo-owned agent defaults
 
-Use `./.agents/skills` as the git-tracked source of truth for skills that should be installable from this repository.
+`.agents/skills` owns portable skill sources. `universal/.codex/AGENTS.md` owns
+shared behavior. Preserve explicit app model/effort choices; Astra is the new
+installation default and Sol is for bounded work the user selects.
 
-Installed copies belong in `~/.agents/skills`. That shared location is picked up by Codex, OpenCode, Pi, and the other tools that read the universal `.agents` skill directory.
+After reviewing and merging updates, install the curated defaults with:
 
-Do not symlink repo skills into `~/.agents/skills`. Install them with `npx skills add` so every machine follows the same path.
-
-## Available Skills
-
-- `acpx`
-- `codex-goal-prompting`
-- `merged`
-- `readme-maintainer`
-- `workos-agent-access`
-- `workos-convex-authkit`
-
-## Install From This Repo
-
-List installable skills:
-
-```bash
-npx skills add anandpant/scripts-prompts-config -l
+```sh
+python3 universal/install-agent-defaults.py
+python3 universal/install-agent-defaults.py --check
 ```
 
-Install `acpx` into `~/.agents/skills`:
+The installer copies only its named, repo-owned skills into the shared directory,
+removes their old external update registrations, and retires duplicate taste,
+browser-verification, frontend, and merged discovery entries. Replaced runtime
+copies are retained outside skill discovery under repo `.memory/agent-defaults`.
+It does not copy account credentials or overwrite model selections. Other skills
+and plugins remain independently installed.
 
-```bash
-npx skills add anandpant/scripts-prompts-config \
-  --skill acpx \
-  -g -y
-```
-
-Interactive install:
-
-```bash
-npx skills add anandpant/scripts-prompts-config
-```
-
-Install `codex-goal-prompting` into `~/.agents/skills`:
-
-```bash
-npx skills add anandpant/scripts-prompts-config \
-  --skill codex-goal-prompting \
-  -g -y
-```
-
-Install `merged` into `~/.agents/skills`:
-
-```bash
-npx skills add anandpant/scripts-prompts-config \
-  --skill merged \
-  -g -y
-```
-
-Install `readme-maintainer` into `~/.agents/skills`:
-
-```bash
-npx skills add anandpant/scripts-prompts-config \
-  --skill readme-maintainer \
-  -g -y
-```
-
-Install `workos-agent-access` into `~/.agents/skills`:
-
-```bash
-npx skills add anandpant/scripts-prompts-config \
-  --skill workos-agent-access \
-  -g -y
-```
-
-Install `workos-convex-authkit` into `~/.agents/skills`:
-
-```bash
-npx skills add anandpant/scripts-prompts-config \
-  --skill workos-convex-authkit \
-  -g -y
-```
+Use the normal skills installer with explicit skill/agent names for optional
+upstream capabilities. Do not install every available skill by default.

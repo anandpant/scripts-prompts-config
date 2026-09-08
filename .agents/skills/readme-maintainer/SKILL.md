@@ -16,14 +16,14 @@ Produce README files that are fast to skim, technically accurate, and explicit a
 5. Run a final accuracy pass.
 
 ### 1) Collect Facts
-Run the bundled scanner first:
+Set `skill_dir` to the directory containing this loaded SKILL.md and run the bundled scanner when it helps establish the facts:
 
 ```bash
-python ~/.agents/skills/readme-maintainer/scripts/readme_facts.py --repo . --format markdown > /tmp/readme-facts.md
-python ~/.agents/skills/readme-maintainer/scripts/readme_facts.py --repo . --format json > /tmp/readme-facts.json
+python3 "$skill_dir/scripts/readme_facts.py" --repo . --format markdown > /tmp/readme-facts.md
+python3 "$skill_dir/scripts/readme_facts.py" --repo . --format json > /tmp/readme-facts.json
 ```
 
-Use `/tmp/readme-facts.json` as the source of truth for detected runtime, tools, deployment, external services, API surface, and test/CI gaps.
+Resolve the helper relative to this SKILL.md. Treat the scanner output as evidence to verify against repository files, not an infallible source of truth.
 
 ### 2) Verify Badge Inputs
 For every versioned badge, confirm:
@@ -47,7 +47,7 @@ Keep the document short and stable. Default order:
 If the project has callable APIs, include a short API section and always include an `e2e api` line in the testing matrix.
 
 ### 4) Testing and CI Must Be Up Front
-Use this table near the top half of README:
+When a test matrix helps the reader, use this as a starting point:
 
 | Layer | Present | Tooling | Runs in CI |
 |---|---|---|---|
@@ -57,7 +57,7 @@ Use this table near the top half of README:
 | e2e web | yes/no | tool list or `none` | yes/no |
 
 Rules:
-- Show all four rows every time.
+- Include the layers relevant to this project; do not force irrelevant rows.
 - Keep `no` visible; do not hide missing layers.
 - If APIs are exposed and `e2e api` is missing, call it out in plain text immediately below the table.
 
@@ -72,7 +72,7 @@ Use `references/readme-patterns.md` for compact badge grouping and section templ
 ### 6) Final Quality Gate
 Before finalizing README changes:
 - Re-run `readme_facts.py` if code changed during editing.
-- Confirm every numeric badge value is source-backed.
-- Call out missing tests/CI explicitly.
-- Include copyright and license lines when available.
-- Keep prose skimmable: short paragraphs, bullets, and tables.
+- Ensure every numeric badge value is source-backed.
+- Ensure missing tests/CI are explicit.
+- Ensure copyright and license lines are present when available.
+- Ensure prose is skimmable: short paragraphs, bullets, and tables.

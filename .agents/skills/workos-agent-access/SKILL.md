@@ -29,6 +29,8 @@ When a repo uses WorkOS hosted AuthKit plus `@workos/authkit-session` or `@worko
 1. real browser sign-in with persisted browser state
 2. direct sealed-session cookie injection
 
+A sealed test session can verify an authenticated page, but it does not prove the hosted sign-in flow. Verify that flow separately when it is the task.
+
 ## Workflow
 
 1. Read `references/playbook.md`.

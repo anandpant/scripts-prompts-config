@@ -5,6 +5,8 @@ description: Craft concise, outcome-driven prompts for Codex Goal/autonomous mod
 
 # Codex Goal Prompting
 
+Use the Goal interface only when explicitly requested. Ordinary tasks do not require a Goal object or goal.md. The objective length rule below applies only to the CLI interface that enforces it; follow the active tool schema for other Goal interfaces.
+
 Codex Goal prompts must fit Codex's goal objective limit: **4,000 characters max, including whitespace**. Aim for **3,500 characters or less** to leave room for command wrappers or edits. For broad work, write the full instructions to `goal.md` in the repo root unless the repo has a clearer documented convention. The short `/goal` objective must explicitly reference `goal.md`.
 
 Within that limit, prompts should be short enough to preserve autonomy, but concrete enough to convey intent. A strong prompt is usually **2–4 compact sections**: goal, functional scope, hard boundaries, and proof. Use bullets for scope when they clarify product intent; avoid file-by-file or implementation-by-implementation checklists.
