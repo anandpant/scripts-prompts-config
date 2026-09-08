@@ -36,7 +36,7 @@ Groomed: {{DATE}}
 3. [Add logs/metrics/guards if needed]
 
 ## Mermaid Diagram
-<!-- Required when 2+ systems or non-trivial data flows are involved -->
+<!-- Optional: include when it clarifies a non-trivial interaction -->
 
 ```mermaid
 sequenceDiagram
@@ -54,7 +54,7 @@ sequenceDiagram
   - Given: [starting state]
   - When: [action]
   - Then: [expected outcome]
-  - **Test**: convex | stagehand | stagehand+visual | venom | manual (checklist) | no test (reason)
+  - **Test**: unit | integration | browser | visual | manual | no test (reason); use the repository’s actual tools
 
 - [ ] **AC2: Regression prevented**
   - Given:
@@ -70,7 +70,6 @@ sequenceDiagram
   - **Test**:
 
 ## Prevention
-
 | Failure Mode | Prevention |
 | --- | --- |
 | [What broke] | [linter/test/type check/monitoring/guardrail] |

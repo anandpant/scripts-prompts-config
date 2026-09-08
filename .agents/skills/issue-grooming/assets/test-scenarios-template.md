@@ -4,7 +4,7 @@
   - Setup:
   - Action:
   - Expected:
-  - **Test**: convex | stagehand | stagehand+visual | venom | manual (checklist) | no test (reason)
+  - **Test**: unit | integration | browser | visual | manual | no test (reason); use the repository’s actual tools
 
 - [ ] Scenario 2: [short name]
   - Setup:

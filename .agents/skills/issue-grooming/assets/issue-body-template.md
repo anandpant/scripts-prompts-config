@@ -33,7 +33,7 @@ Groomed: {{DATE}}
 3. [Step 3]
 
 ## Mermaid Diagram
-<!-- Required when 2+ systems or non-trivial data flows are involved -->
+<!-- Optional: include when it clarifies a non-trivial interaction -->
 
 ```mermaid
 flowchart LR
@@ -46,7 +46,7 @@ flowchart LR
   - Given: [precondition]
   - When: [action]
   - Then: [outcome]
-  - **Test**: convex | stagehand | stagehand+visual | venom | manual (checklist) | no test (reason)
+  - **Test**: unit | integration | browser | visual | manual | no test (reason); use the repository’s actual tools
 
 - [ ] **AC2: [name]**
   - Given:
@@ -59,7 +59,7 @@ flowchart LR
   - Setup:
   - Action:
   - Expected:
-  - **Test**: convex | stagehand | stagehand+visual | venom | manual (checklist) | no test (reason)
+  - **Test**: unit | integration | browser | visual | manual | no test (reason); use the repository’s actual tools
 
 - [ ] Scenario 2: [short name]
   - Setup:

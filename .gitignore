@@ -44,3 +44,7 @@ NS:**/.omp/agent/auth.json
 
 # generated local Omarchy snapshots
 backups/omarchy-dotfiles-*/
+
+# Python test artifacts
+__pycache__/
+.pytest_cache/

@@ -1,0 +1,23 @@
+name: Agent defaults
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Test install and shared helpers
+        run: |
+          python3 universal/install-agent-defaults.test.py
+          python3 universal/herdr-smoke.test.py
+          python3 universal/mine-codex-transcripts.test.py
+          python3 -m venv "$RUNNER_TEMP/watcher-tests"
+          "$RUNNER_TEMP/watcher-tests/bin/pip" install pytest
+          "$RUNNER_TEMP/watcher-tests/bin/python" -m pytest -q .agents/skills/babysit-pr/scripts/test_gh_pr_watch.py

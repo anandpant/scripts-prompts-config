@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Babysitter"
+  short_description: "Watch PR checks, actionable reviews, and authorized merge"
+  default_prompt: "Watch the current PR through required checks, actionable review feedback, and authorized merge or explicit handoff. Follow the babysit-pr skill: keep one watcher, fix in-scope defects, preserve unrelated work, and report meaningful changes. Carry forward existing authorization; do not send written replies to others without explicit authorization."

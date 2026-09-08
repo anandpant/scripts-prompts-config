@@ -4,7 +4,7 @@
   - Given: [precondition]
   - When: [action]
   - Then: [outcome]
-  - **Test**: convex | stagehand | stagehand+visual | venom | manual (checklist) | no test (reason)
+  - **Test**: unit | integration | browser | visual | manual | no test (reason); use the repository’s actual tools
 
 - [ ] **AC2: [name]**
   - Given:

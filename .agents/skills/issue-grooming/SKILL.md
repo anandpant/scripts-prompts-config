@@ -4,7 +4,7 @@ description: |
   Groom GitHub issues into implementation-ready specs that a human can ship without follow-up questions.
   Use when a GitHub issue is ambiguous or incomplete and needs: clear scope and non-goals, dependencies, file touchpoints,
   a step-by-step implementation strategy, a test plan (with explicit test type per scenario), and acceptance criteria.
-  Also use when you need a GitHub-renderable Mermaid diagram (2+ systems/data flows) and a way to sanity-check Mermaid syntax.
+  Include a GitHub-renderable Mermaid diagram only when it helps explain the issue.
 ---
 
 # issue-grooming
@@ -17,7 +17,7 @@ Produce concise, high-signal GitHub issues that define:
 - What is in-scope vs out-of-scope (non-goals)
 - What changes are needed (files/systems), and in what order
 - How we will prove it works (test scenarios + acceptance criteria, each with an explicit test type)
-- How the systems interact (Mermaid diagram when 2+ systems are involved)
+- How the systems interact, with a diagram when it clarifies the explanation
 
 ## Quick Start
 
@@ -104,20 +104,13 @@ Aim for a small set of ordered steps. Each step should have:
 - Notes on edge cases
 - Rollback/mitigation if the step is risky
 
-### 6. Tests: Classify Every Scenario
+### 6. Tests: use the project's real checks
 
-Do not leave “tests TBD”. Every acceptance criterion must have a test type:
-
-- `convex`: backend logic (queries/mutations/actions)
-- `stagehand`: E2E browser flows
-- `stagehand+visual`: E2E plus visual/LLM grading
-- `venom`: public API contracts (use when applicable)
-- `manual`: checklist-style verification steps (include the checklist)
-- `no test`: allowed only with a specific reason
+State how acceptance will be verified using the repository's actual test tools: unit, integration, browser, API, manual content review, or no test with a concrete reason. Do not introduce Stagehand, Venom, or another stack just to fit the template.
 
 Use `assets/test-scenarios-template.md` and `assets/acceptance-criteria-template.md` to keep the issue readable.
 
-### 7. Mermaid: Required for 2+ Systems/Data Flows
+### 7. Diagrams when they help
 
 Add a Mermaid diagram when:
 
@@ -128,10 +121,6 @@ Keep diagrams small and label edges with verbs.
 
 Before shipping, sanity-check GitHub rendering:
 
-- Confirm GitHub’s Mermaid version by pasting this into a comment (or a scratch issue):
-  ```mermaid
-  info
-  ```
 - Validate locally when you can (see `references/github-mermaid.md` and `scripts/validate_mermaid_in_md.mjs`).
 
 ## Templates (Copy/Paste)
@@ -157,7 +146,7 @@ gh issue edit N --body-file /path/to/body.md
 See `references/github-mermaid.md` for details and a “common failures” section. Highlights:
 
 - Use fenced blocks exactly: triple backticks + `mermaid`
-- Avoid advanced Mermaid features unless you have confirmed GitHub’s Mermaid version via `info`
+- Avoid advanced Mermaid features unless you have confirmed GitHub’s Mermaid version from current documentation
 - Keep node IDs simple (`A`, `auth_service`) and put human labels in brackets/quotes
 - If a diagram renders locally but not on GitHub, simplify first (remove init directives/theme config, complex labels, HTML)
 
