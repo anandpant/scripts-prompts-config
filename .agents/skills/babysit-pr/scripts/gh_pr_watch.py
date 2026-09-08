@@ -267,7 +267,15 @@ def get_pr_checks(pr_spec, repo):
     if parsed["value"] is not None:
         cmd.append(parsed["value"])
     cmd.extend(["--json", checks_fields()])
-    data = gh_json(cmd, repo=repo)
+    try:
+        data = gh_json(cmd, repo=repo)
+    except GhCommandError as err:
+        cause = err.__cause__
+        if isinstance(cause, subprocess.CalledProcessError) and re.search(
+            r"^no checks reported\b", (cause.stderr or "").strip(), re.I
+        ):
+            return []  # A new head can precede check registration.
+        raise
     if data is None:
         return []
     if not isinstance(data, list):
@@ -289,7 +297,7 @@ def summarize_checks(checks):
         bucket = str(check.get("bucket") or "").lower()
         if is_pending_check(check):
             pending_count += 1
-        if bucket == "fail":
+        if bucket in {"fail", "cancel"}:
             failed_count += 1
         if bucket == "pass":
             passed_count += 1
@@ -297,7 +305,7 @@ def summarize_checks(checks):
         "pending_count": pending_count,
         "failed_count": failed_count,
         "passed_count": passed_count,
-        "all_terminal": pending_count == 0,
+        "all_terminal": bool(checks) and pending_count == 0,
     }
 
 

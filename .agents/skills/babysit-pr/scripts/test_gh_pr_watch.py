@@ -215,3 +215,36 @@ def test_failed_jobs_include_direct_logs_endpoint(monkeypatch):
             "logs_endpoint": "repos/openai/codex/actions/jobs/555/logs",
         }
     ]
+
+
+def test_cancelled_check_is_unsuccessful():
+    checks = gh_pr_watch.summarize_checks([{"bucket": "cancel", "state": "CANCELLED"}])
+    assert checks["failed_count"] == 1
+    assert "ready_to_merge" not in gh_pr_watch.recommend_actions(
+        sample_pr(), checks, [], [], [], 0, 3
+    )
+
+
+def test_missing_checks_waits_and_later_registered_checks_can_finish(monkeypatch):
+    def no_checks(*args, **kwargs):
+        raise gh_pr_watch.subprocess.CalledProcessError(
+            1, ["gh", "pr", "checks"], stderr="no checks reported on the new head"
+        )
+
+    monkeypatch.setattr(gh_pr_watch.subprocess, "run", no_checks)
+    checks = gh_pr_watch.summarize_checks(gh_pr_watch.get_pr_checks("123", "owner/repo"))
+    assert not checks["all_terminal"]
+    assert not gh_pr_watch.is_pr_ready_to_merge(sample_pr(), checks, [])
+    registered = gh_pr_watch.summarize_checks([{"bucket": "pass", "state": "SUCCESS"}])
+    assert gh_pr_watch.is_pr_ready_to_merge(sample_pr(), registered, [])
+
+
+def test_other_check_command_errors_are_not_hidden(monkeypatch):
+    def denied(*args, **kwargs):
+        raise gh_pr_watch.subprocess.CalledProcessError(
+            1, ["gh", "pr", "checks"], stderr="authentication failed"
+        )
+
+    monkeypatch.setattr(gh_pr_watch.subprocess, "run", denied)
+    with pytest.raises(gh_pr_watch.GhCommandError):
+        gh_pr_watch.get_pr_checks("123", "owner/repo")

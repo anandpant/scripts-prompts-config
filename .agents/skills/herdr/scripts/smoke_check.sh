@@ -107,7 +107,7 @@ wait_for_shell_output() {
   return 0
 }
 
-run_pane_smoke() {
+run_pane_smoke() (
   local runner="$1"
   local label="$2"
   local cwd="$3"
@@ -138,7 +138,7 @@ run_pane_smoke() {
     fi
     rm -f "$read_file"
   }
-  trap cleanup RETURN
+  trap cleanup EXIT
 
   wait_for_shell_output "$runner" "$pane_id"
   "$runner" pane send-text "$pane_id" "printf \"$marker:%s\\n\" \"\$PWD\"" >/dev/null
@@ -156,7 +156,7 @@ run_pane_smoke() {
   echo "smoke_check.sh: pane smoke did not observe $marker output" >&2
   cat "$read_file" >&2
   return 1
-}
+)
 
 if [ -n "$remote" ]; then
   need ssh
