@@ -319,7 +319,7 @@ herdr server agent-manifests --json
 ```
 
 The my-nix baseline expects Herdr integrations for Claude, Codex, Devin,
-OpenCode, Cursor, and Pi. The Pi hook is Home Manager-owned in this
+OpenCode, and Pi. The Pi hook is Home Manager-owned in this
 repo because their extension directories can be symlinked into the Nix store.
 For Claude and Codex, also verify the active screen-detection manifest before
 diagnosing completion waits; their integrations do not author lifecycle state.

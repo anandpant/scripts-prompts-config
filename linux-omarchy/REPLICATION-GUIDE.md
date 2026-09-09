@@ -778,6 +778,19 @@ tmux source-file ~/.config/tmux/tmux.conf
 Notes:
 - `bell-action none` plus disabled activity/silence actions prevent tmux from marking the terminal urgent when a CLI emits BEL.
 
+### Herdr installation and service upgrades
+
+Run `bash ~/scripts-prompts-config/linux-omarchy/scripts/install-herdr.sh` to install
+Herdr 0.9.0 from its checksum-verified Linux release. The installer leaves running
+servers and panes untouched and installs the `ExitType=cgroup` systemd drop-in.
+This lets native live handoff replace the server without systemd killing its agents.
+
+Before replacing a running server, capture its pane/process list and session
+snapshot. Use native live handoff when supported, then verify the server version
+and that agent process IDs survived. An ordinary `systemctl --user restart
+herdr.service` stops pane processes; recover their saved native sessions if a
+restart is necessary. Keep desktop-session environment drop-ins in place.
+
 ### Herdr keybindings
 
 Restore the matching Herdr prefix and pane controls:

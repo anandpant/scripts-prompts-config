@@ -2,6 +2,22 @@
 
 Use this when checking or steering Herdr sessions on another machine.
 
+## Saved machines in Herdr 0.9
+
+For one UI with Local and saved SSH machines, use `herdr machine add <ssh-target>
+--label <label>` in an interactive terminal, then launch `herdr`. A profile
+targets the remote default session unless `--remote-session <name>` is provided.
+Use `herdr machine list --json` to discover profile IDs. Native profiles keep a
+combined agent list and reconnect independently.
+
+Setup can require installation or replacement of an older remote server.
+Replacing that server can stop its panes; preserve active work and follow the
+user's authority before accepting it. Do not automatically answer setup prompts.
+Background reconnects do not install or restart servers.
+
+Selecting a machine in the UI does not retarget an existing pane's CLI socket.
+For automation, continue using explicit SSH and the intended remote session below.
+
 ## Standard Path
 
 Run the Herdr CLI on the machine that owns the session. For remote sessions,
