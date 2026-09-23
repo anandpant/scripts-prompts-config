@@ -559,7 +559,25 @@ windowrulev2 = animation slideIn, class:^(alacritty-dropdown)$
 
 ---
 
-## 5. Voice Dictation (hyprwhspr + ElevenLabs Scribe v2)
+## 5. Voice Dictation (voxtype + local Parakeet)
+
+`voxtype` provides local streaming dictation with the Parakeet unified English 0.6b model. It replaces the hyprwhspr/ElevenLabs setup below as the primary path.
+
+```bash
+mkdir -p ~/.config/voxtype ~/.config/systemd/user
+cp ~/scripts-prompts-config/linux-omarchy/configs/voxtype-config.toml ~/.config/voxtype/config.toml
+cp ~/scripts-prompts-config/linux-omarchy/configs/voxtype.service ~/.config/systemd/user/voxtype.service
+voxtype setup model   # download parakeet-unified-en-0.6b into ~/.local/share/voxtype/models/
+systemctl --user daemon-reload
+systemctl --user enable --now voxtype.service
+```
+
+Notes:
+- `HOME` toggles recording through voxtype's evdev hotkey, so the user must be in the `input` group. Omarchy also binds `Super+Ctrl+X` (toggle) and `F9` (push-to-talk) to `voxtype record`.
+- With `streaming = true`, `streaming_chunk_secs`, `streaming_left_context_secs`, and `streaming_right_context_secs` must be set explicitly. Each must be a multiple of 0.08s (8 mel frames), or the daemon exits with `left_context_secs must map to a mel-frame count divisible by 8` and restart-loops. voxtype 1.0.1's defaults fail this check.
+- Debug with `journalctl --user -u voxtype -f`.
+
+## 5b. Legacy Voice Dictation (hyprwhspr + ElevenLabs Scribe v2)
 
 `hyprwhspr` provides system-wide voice-to-text here, using ElevenLabs realtime transcription with `scribe_v2_realtime`.
 
