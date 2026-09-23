@@ -66,8 +66,12 @@
 # Dropdown terminal toggle (Alacritty special workspace)
 ~/.local/bin/toggle-dropdown-terminal
 
-# hyprwhspr dictation config
+# hyprwhspr dictation config (legacy ElevenLabs Scribe setup)
 ~/.config/hyprwhspr/config.json
+
+# voxtype dictation - local Parakeet unified 0.6b streaming, HOME key toggle
+~/.config/voxtype/config.toml
+~/.config/systemd/user/voxtype.service
 
 # Ghostty-aware shortcut router (for Super+C/V/W/T/N in non-Ghostty apps)
 ~/.local/bin/ghostty-or-universal
