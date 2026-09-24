@@ -1,9 +1,0 @@
-{
-  "$schema": "https://raw.githubusercontent.com/goodroot/hyprwhspr/main/share/config.schema.json",
-  "recording_mode": "toggle",
-  "use_hypr_bindings": true,
-  "transcription_backend": "realtime-ws",
-  "websocket_provider": "elevenlabs",
-  "websocket_model": "scribe_v2_realtime",
-  "audio_ducking": true
-}

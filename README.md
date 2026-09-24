@@ -155,7 +155,7 @@ sudo pacman -Syu git curl wget zsh fzf eza bat ripgrep fd zoxide atuin starship
 
 # Terminal
 brew install --cask ghostty wezterm
-# Omarchy/Arch terminal configs are tracked under linux-omarchy/configs/
+# Omarchy/Arch dotfiles are managed by chezmoi from shpitdev/my-nix.
 ```
 
 ### Development Tools
