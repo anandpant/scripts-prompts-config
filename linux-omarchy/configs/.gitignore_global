@@ -1,8 +1,0 @@
-# Agent skill sync outputs (source lives in scripts-prompts-config)
-**/.agents/skills/*
-**/.claude/skills/*
-**/.pi/*
-**/.codex/skills/*
-**/.opencode/skills/*
-**/skills-lock.json
-**/.claude/scheduled_tasks.lock

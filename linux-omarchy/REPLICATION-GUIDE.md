@@ -4,15 +4,20 @@ This guide documents how to replicate the quality-of-life improvements made on t
 
 ---
 
-## 0. Backup (Before Reinstall)
+## 0. Managed configuration
 
-Create a backup snapshot of the Omarchy-related dotfiles/configs:
+Omarchy dotfiles live in the private `shpitdev/my-nix` repository under `chezmoi/`. This repository keeps package setup and troubleshooting notes only; do not copy dotfiles from `linux-omarchy/configs/`.
+
+Bootstrap a fresh machine:
 
 ```bash
-/home/anandpant/scripts-prompts-config/linux-omarchy/scripts/backup-omarchy-dotfiles.sh
+sudo pacman -S --needed chezmoi
+chezmoi init --apply git@github.com:shpitdev/my-nix.git
 ```
 
-This creates a timestamped folder under `backups/omarchy-dotfiles-*`.
+The my-nix checkout contains `.chezmoiroot`, so chezmoi uses its `chezmoi/` directory as the source state. On the existing Omarchy machine, the generated config points `sourceDir` at `~/Development/anandpant/my-nix`.
+
+For durable changes, edit the my-nix source with `chezmoi edit`, or edit live and run `chezmoi re-add`; review `chezmoi diff`, apply, and ship the my-nix change.
 
 ---
 
@@ -61,13 +66,11 @@ fi
 ```
 
 ### Match the macOS git prompt
-Ghostty is not the source of the branch details. The prompt comes from `starship`.
 
-Copy the tracked config to get the same compact branch and git-status display used on macOS:
+Starship is managed by chezmoi:
 
 ```bash
-mkdir -p ~/.config
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/starship.toml ~/.config/starship.toml
+chezmoi apply ~/.config/starship.toml
 ```
 
 ### What each tool does:
@@ -170,98 +173,59 @@ sudo modprobe uinput
 sudo udevadm control --reload-rules
 ```
 
-### Create ~/.config/xremap/config.yml
-Use the full, versioned file in this repo (so diffs are easy to review later):
+### Configure xremap
+
+Apply the managed config from my-nix:
+
 ```bash
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/xremap-config.yml ~/.config/xremap/config.yml
+chezmoi apply ~/.config/xremap/config.yml
 ```
 
 Notes on the current layout:
-- Global Super→Ctrl mappings (excluding Ghostty so Ghostty-only overrides always win).
-- Ghostty-only overrides for Super+A/C/V/W/D so Ghostty uses Ctrl+Shift+… shortcuts and avoids clobbering terminal keys like Ctrl+D and Ctrl+T.
-- Hyprland passthrough block for Super+Alt/Super+Ctrl combos.
-- Super+Alt+D passthrough for dictation (`hyprwhspr`).
+- Global Super→Ctrl mappings exclude Ghostty so Ghostty-only overrides always win.
+- Ghostty-only overrides handle Super+A/C/V/W/D without clobbering terminal keys.
+- Hyprland passthroughs preserve Super+Alt/Super+Ctrl combinations, including Super+Alt+D for voxtype dictation.
+- Use `xremap-wlroots-bin`, not `xremap-hypr-bin`; the latter's Hyprland client is incompatible with newer Hyprland releases.
+- Hyprland intercepts its own Super bindings before xremap. Remove a conflicting Hyprland binding in the managed Lua source when xremap should receive that key.
+- If xremap starts before the compositor and logs `Could not find wayland compositor`, restart it after login with `systemctl --user restart xremap`.
 
 ### Autostart xremap (recommended: systemd --user)
-```bash
-mkdir -p ~/.config/systemd/user
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/xremap.service ~/.config/systemd/user/xremap.service
 
+```bash
+chezmoi apply ~/.config/systemd/user/xremap.service
 systemctl --user daemon-reload
 systemctl --user enable --now xremap.service
 ```
 
 If you need device names, use: `xremap --list-devices`
 
-Alternative (Hyprland autostart):
-- Add to `~/.config/hypr/autostart.conf`:
-```bash
-exec-once = xremap --device "YOUR_KEYBOARD_NAME" ~/.config/xremap/config.yml
-```
 
 ---
 
-### Config Sync Checklist (Ghostty + tmux + Herdr + xremap + Hyprland)
-- Update live configs: `~/.config/ghostty/config`, `~/.tmux.conf`, `~/.config/herdr/config.toml`, `~/.config/xremap/config.yml`, and `~/.config/hypr/*.lua`
-- Restart xremap: `systemctl --user restart xremap`
-- Reload Hyprland config: `hyprctl reload && hyprctl configerrors`
-- Reload Ghostty: Ctrl+Shift+, (or restart Ghostty)
-- Reload tmux: `tmux source-file ~/.tmux.conf`
-- Reload Herdr: `herdr server reload-config`
-- Copy into repo:
-  - `cp ~/.config/ghostty/config ~/scripts-prompts-config/linux-omarchy/configs/ghostty-config`
-  - `cp ~/.tmux.conf ~/scripts-prompts-config/linux-omarchy/configs/tmux.conf`
-  - `cp ~/.config/herdr/config.toml ~/scripts-prompts-config/linux-omarchy/configs/herdr.toml`
-  - `cp ~/.config/xremap/config.yml ~/scripts-prompts-config/linux-omarchy/configs/xremap-config.yml`
-  - `cp ~/.config/hypr/bindings.lua ~/scripts-prompts-config/linux-omarchy/configs/hypr-bindings.lua`
-  - `cp ~/.config/hypr/monitors.lua ~/scripts-prompts-config/linux-omarchy/configs/hypr-monitors.lua`
-- Sanity check keys in Ghostty: Super+A/C/V/W/D and Ctrl+T; sanity check F13/F14/F15 monitor scaling.
+### Config sync checklist
+
+- Review drift with `chezmoi diff`.
+- Apply the source with `chezmoi apply`.
+- If a deliberate live edit should become the source, run `chezmoi re-add <target>` from the my-nix checkout and ship that diff.
+- Reload affected runtime surfaces: `hyprctl reload && hyprctl configerrors`, `systemctl --user restart xremap`, `tmux source-file ~/.tmux.conf`, or `herdr server reload-config`.
 
 ## 4. Hyprland Customizations
 
 ### Current Omarchy 4 / Hyprland Lua config
 
-Omarchy 4 migrated Hyprland user config from `.conf` files to Lua. The current, working versions are tracked in `linux-omarchy/configs/hypr-*.lua`.
+Omarchy 4 uses Lua for user Hyprland configuration. The current files are managed in `my-nix/chezmoi/dot_config/hypr/`.
 
-Restore them with:
 ```bash
-mkdir -p ~/.config/hypr
-cp ~/scripts-prompts-config/linux-omarchy/configs/hypr-hyprland.lua ~/.config/hypr/hyprland.lua
-cp ~/scripts-prompts-config/linux-omarchy/configs/hypr-autostart.lua ~/.config/hypr/autostart.lua
-cp ~/scripts-prompts-config/linux-omarchy/configs/hypr-bindings.lua ~/.config/hypr/bindings.lua
-cp ~/scripts-prompts-config/linux-omarchy/configs/hypr-input.lua ~/.config/hypr/input.lua
-cp ~/scripts-prompts-config/linux-omarchy/configs/hypr-looknfeel.lua ~/.config/hypr/looknfeel.lua
-cp ~/scripts-prompts-config/linux-omarchy/configs/hypr-monitors.lua ~/.config/hypr/monitors.lua
+chezmoi apply ~/.config/hypr
 hyprctl reload
 hyprctl configerrors
 ```
 
-Important migration note: with the Lua parser, `hyprctl keyword monitor ...` fails with `keyword can't work with non-legacy parsers`. Use Lua `hl.monitor(...)` / `hyprctl eval ...` instead. This matters for the F13/F14/F15 monitor-scale keys.
+With the Lua parser, `hyprctl keyword monitor ...` fails with `keyword can't work with non-legacy parsers`. Use Lua `hl.monitor(...)` or `hyprctl eval ...` for monitor changes.
 
-### Legacy Hyprland 0.53+ config compatibility (old `.conf` configs)
+### Hyprland compatibility after an Omarchy update
 
-If you see `config option <misc:new_window_takes_over_fullscreen> does not exist` or `invalid field` errors, update the defaults to 0.53+ syntax:
-
-```bash
-# ~/.local/share/omarchy/default/hypr/looknfeel.conf
-misc {
-    on_focus_under_fullscreen = 1
-}
-
-# ~/.local/share/omarchy/default/hypr/windows.conf and apps/*.conf
-# Replace legacy inline rules with windowrulev2
-windowrulev2 = opacity 0.97 0.9, class:.*
-
-# ~/.local/share/omarchy/default/hypr/apps/hyprshot.conf
-layerrule = match:namespace selection, no_anim on
-
-# ~/.local/share/omarchy/default/hypr/apps/walker.conf
-layerrule = match:namespace walker, no_anim on
-
-# ~/.config/hypr/input.conf (per-app scroll tweaks)
-windowrule = match:class (Alacritty|kitty), scroll_touchpad 1.5
-windowrule = match:class com.mitchellh.ghostty, scroll_touchpad 0.2
-```
+Errors such as `config option <misc:new_window_takes_over_fullscreen> does not exist`, `invalid field`, or `keyword can't work with non-legacy parsers` usually indicate an outdated user override. Do not edit `/usr/share/omarchy`, `~/.config/omarchy`, or the `~/.local/share/omarchy` package link. Compare the managed override with the current APIs under `/usr/share/omarchy/default/hypr/`, update the my-nix chezmoi source, then apply and rerun `hyprctl configerrors`.
 
 ### Remap close window to Super+Q (so Cmd+W works in apps)
 
@@ -561,205 +525,37 @@ windowrulev2 = animation slideIn, class:^(alacritty-dropdown)$
 
 ## 5. Voice Dictation (voxtype + local Parakeet)
 
-`voxtype` provides local streaming dictation with the Parakeet unified English 0.6b model. It replaces the hyprwhspr/ElevenLabs setup below as the primary path.
+`voxtype` provides local streaming dictation with the Parakeet unified English 0.6b model. Its config and user service are managed by chezmoi:
 
 ```bash
-mkdir -p ~/.config/voxtype ~/.config/systemd/user
-cp ~/scripts-prompts-config/linux-omarchy/configs/voxtype-config.toml ~/.config/voxtype/config.toml
-cp ~/scripts-prompts-config/linux-omarchy/configs/voxtype.service ~/.config/systemd/user/voxtype.service
-voxtype setup model   # download parakeet-unified-en-0.6b into ~/.local/share/voxtype/models/
+chezmoi apply ~/.config/voxtype/config.toml ~/.config/systemd/user/voxtype.service
+voxtype setup model
 systemctl --user daemon-reload
 systemctl --user enable --now voxtype.service
 ```
 
-Notes:
-- `HOME` toggles recording through voxtype's evdev hotkey, so the user must be in the `input` group. Omarchy also binds `Super+Ctrl+X` (toggle) and `F9` (push-to-talk) to `voxtype record`.
-- With `streaming = true`, `streaming_chunk_secs`, `streaming_left_context_secs`, and `streaming_right_context_secs` must be set explicitly. Each must be a multiple of 0.08s (8 mel frames), or the daemon exits with `left_context_secs must map to a mel-frame count divisible by 8` and restart-loops. voxtype 1.0.1's defaults fail this check.
-- Debug with `journalctl --user -u voxtype -f`.
+Omarchy keeps Super+Ctrl+X for toggle dictation and F9 for push-to-talk; the managed override also binds Super+Alt+D to `voxtype record toggle`.
 
-## 5b. Legacy Voice Dictation (hyprwhspr + ElevenLabs Scribe v2)
-
-`hyprwhspr` provides system-wide voice-to-text here, using ElevenLabs realtime transcription with `scribe_v2_realtime`.
-
-### Install
-```bash
-yay -S hyprwhspr
-```
-
-### Configure
-```bash
-mkdir -p ~/.config/hyprwhspr
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/hyprwhspr-config.json ~/.config/hyprwhspr/config.json
-```
-
-Notes:
-- The tracked config uses the realtime websocket backend.
-- `websocket_provider` is `elevenlabs`.
-- `websocket_model` is `scribe_v2_realtime`.
-
-### Enable systemd service (persists across restart/login)
-```bash
-systemctl --user daemon-reload
-systemctl --user enable --now hyprwhspr.service
-systemctl --user is-enabled hyprwhspr.service
-```
-
-### Hyprland binding
-Add to `~/.config/hypr/bindings.conf`:
-```
-bindd = SUPER ALT, D, Speech-to-text, exec, /usr/lib/hyprwhspr/config/hyprland/hyprwhspr-tray.sh record
-```
-
-If you use xremap, keep passthroughs so Super+Alt+D reaches Hyprland:
-```
-Super_L-Alt_L-d: Super_L-Alt_L-d
-Super_L-Alt_R-d: Super_L-Alt_R-d
-Super_R-Alt_L-d: Super_R-Alt_L-d
-Super_R-Alt_R-d: Super_R-Alt_R-d
-```
-
-### Usage
-- `Super+Alt+D` - Toggle recording (press once to start, again to stop and inject transcript)
-- Waybar microphone icon - Click to toggle dictation, right-click to start `hyprwhspr` if it is not running, middle-click to restart it
-- `hyprwhspr status` - Confirm the service, backend, and input pipeline are healthy
-- `journalctl --user -u hyprwhspr.service -f` - Tail live logs while testing
-
-### Optional: Auto-pause Spotify while dictating
-
-Create `~/.local/bin/hyprwhspr-spotify-toggle` (watches the hyprwhspr recording flag and pauses/resumes Spotify):
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-STATUS_FILE="${HOME}/.config/hyprwhspr/recording_status"
-STATE_FILE="${HOME}/.config/hyprwhspr/spotify_was_playing"
-STATUS_DIR="$(dirname "$STATUS_FILE")"
-STATUS_BASENAME="$(basename "$STATUS_FILE")"
-
-playerctl_spotify() {
-  playerctl -p spotify "$@" 2>/dev/null
-}
-
-is_spotify_playing() {
-  local status
-  status="$(playerctl_spotify status || true)"
-  [[ "$status" == "Playing" ]]
-}
-
-pause_spotify_if_playing() {
-  if is_spotify_playing; then
-    printf '1' >"$STATE_FILE"
-    playerctl_spotify pause || true
-  else
-    rm -f "$STATE_FILE"
-  fi
-}
-
-resume_spotify_if_needed() {
-  if [[ -f "$STATE_FILE" ]]; then
-    playerctl_spotify play || true
-    rm -f "$STATE_FILE"
-  fi
-}
-
-mkdir -p "$STATUS_DIR"
-
-# Handle current state on startup.
-if [[ -f "$STATUS_FILE" ]]; then
-  pause_spotify_if_playing
-fi
-
-inotifywait -m -e create -e delete -e moved_to -e moved_from -e close_write "$STATUS_DIR" | \
-while read -r _dir _events file; do
-  [[ "$file" == "$STATUS_BASENAME" ]] || continue
-  if [[ -f "$STATUS_FILE" ]]; then
-    pause_spotify_if_playing
-  else
-    resume_spotify_if_needed
-  fi
-done
-```
-
-Make it executable and start it on login (e.g., add to `~/.config/hypr/autostart.conf`):
-```bash
-chmod +x ~/.local/bin/hyprwhspr-spotify-toggle
-exec-once = ~/.local/bin/hyprwhspr-spotify-toggle
-```
-
----
+With `streaming = true`, `streaming_chunk_secs`, `streaming_left_context_secs`, and `streaming_right_context_secs` must each be a multiple of 0.08 seconds. Debug with `journalctl --user -u voxtype -f`.
 
 ## 6. Alacritty Terminal Config
 
-Add to `~/.config/alacritty/alacritty.toml`:
-```toml
-general.import = [ "~/.config/omarchy/current/theme/alacritty.toml" ]
+Alacritty is managed by chezmoi:
 
-[colors.primary]
-background = "#0a0f1a"
-foreground = "#e8ede9"
-
-[colors.normal]
-black   = "#0a100b"
-red     = "#e09080"
-green   = "#5ec4a0"
-yellow  = "#e8d080"
-blue    = "#60b0e0"
-magenta = "#c090c0"
-cyan    = "#50d0d0"
-white   = "#e8ede9"
-
-[colors.bright]
-black   = "#607068"
-red     = "#f0a090"
-green   = "#70e0b8"
-yellow  = "#f8e8a0"
-blue    = "#80c8f0"
-magenta = "#e0a8e0"
-cyan    = "#60f0e8"
-white   = "#f8fcf8"
-
-[env]
-TERM = "xterm-256color"
-
-[terminal]
-shell = { program = "tmux", args = ["new-session", "-A", "-s", "main"] }
-
-[font]
-normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
-bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
-italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
-size = 9
-
-[window]
-padding.x = 14
-padding.y = 14
-decorations = "None"
-opacity = 0.85
-
-[cursor]
-style = { shape = "Block", blinking = "Never" }
-
-[keyboard]
-bindings = [
-  { key = "Insert", mods = "Shift", action = "Paste" },
-  { key = "Insert", mods = "Control", action = "Copy" },
-  { key = "Equals", mods = "Control|Shift", action = "IncreaseFontSize" },
-  { key = "Minus", mods = "Control|Shift", action = "DecreaseFontSize" },
-  { key = "Key0", mods = "Control|Shift", action = "ResetFontSize" },
-  { key = "Return", mods = "Shift", chars = "\\u001b\\r" }
-]
+```bash
+chezmoi apply ~/.config/alacritty/alacritty.toml
 ```
+
+The managed file uses the Omarchy theme, launches tmux, preserves Insert copy/paste controls, and sends Shift+Return as CSI-u.
 
 ---
 
 ## 7. Kitty Terminal Config
 
-Copy the kitty config and theme files:
+Apply the managed kitty config and themes:
+
 ```bash
-mkdir -p ~/.config/kitty/themes
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/kitty.conf ~/.config/kitty/kitty.conf
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/kitty-tokyo-night-storm.conf ~/.config/kitty/themes/tokyo-night-storm.conf
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/kitty-aether.conf ~/.config/kitty/themes/aether.conf
+chezmoi apply ~/.config/kitty
 ```
 
 Notes:
@@ -773,9 +569,10 @@ Notes:
 
 ## 8. Ghostty Terminal Config
 
-Copy the full config so it stays in sync with the repo:
+Apply the managed Ghostty config:
+
 ```bash
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/ghostty-config ~/.config/ghostty/config
+chezmoi apply ~/.config/ghostty/config
 ```
 
 Notes:
@@ -786,11 +583,11 @@ Notes:
 
 ## 9. tmux Config
 
-Copy the live tmux config from the repo and reload it:
+Apply the managed tmux config and reload it:
+
 ```bash
-mkdir -p ~/.config/tmux
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/tmux.conf ~/.config/tmux/tmux.conf
-tmux source-file ~/.config/tmux/tmux.conf
+chezmoi apply ~/.tmux.conf
+tmux source-file ~/.tmux.conf
 ```
 
 Notes:
@@ -811,10 +608,10 @@ restart is necessary. Keep desktop-session environment drop-ins in place.
 
 ### Herdr keybindings
 
-Restore the matching Herdr prefix and pane controls:
+Apply the managed Herdr config and reload it:
+
 ```bash
-mkdir -p ~/.config/herdr
-cp /home/anandpant/scripts-prompts-config/linux-omarchy/configs/herdr.toml ~/.config/herdr/config.toml
+chezmoi apply ~/.config/herdr/config.toml
 herdr server reload-config
 ```
 
@@ -822,74 +619,15 @@ The bindings mirror the terminal muscle memory: `Ctrl+Space` is the prefix, then
 
 ---
 
-## 10. Zed Editor Keybindings
+## 10. Zed Editor Configuration
 
-Create `~/.config/zed/keymap.json`:
-```json
-[
-  {
-    "bindings": {
-      "super-a": "editor::SelectAll",
-      "super-c": "editor::Copy",
-      "super-v": "editor::Paste",
-      "super-x": "editor::Cut",
-      "super-z": "editor::Undo",
-      "super-shift-z": "editor::Redo",
-      "super-s": "workspace::Save",
-      "super-w": "pane::CloseActiveItem",
-      "super-t": "workspace::NewFile",
-      "super-f": "buffer_search::Deploy",
-      "super-p": "file_finder::Toggle",
-      "super-shift-p": "command_palette::Toggle",
-      "super-n": "workspace::NewWindow",
-      "super-o": "workspace::Open",
-      "super-d": "pane::SplitRight",
-      "super-shift-d": "pane::SplitDown"
-    }
-  },
-  {
-    "context": "Terminal",
-    "bindings": {
-      "shift-enter": ["terminal::SendText", "\u001b\r"],
-      "super-a": "terminal::SelectAll",
-      "super-c": "terminal::Copy",
-      "super-v": "terminal::Paste"
-    }
-  }
-]
+Zed keybindings and settings are managed by chezmoi:
+
+```bash
+chezmoi apply ~/.config/zed/keymap.json ~/.config/zed/settings.json
 ```
 
-### Zed Global Settings
-
-Create or update `~/.config/zed/settings.json` (redact any API keys):
-```json
-{
-  "prettier": { "allowed": false },
-  "agent": {
-    "default_profile": "yolo",
-    "default_model": { "provider": "zed.dev", "model": "gemini-3-flash" },
-    "inline_assistant_model": { "provider": "zed.dev", "model": "gemini-3-flash" },
-    "always_allow_tool_actions": true
-  },
-  "search": { "include_ignored": true },
-  "agent_servers": { "claude": { "default_mode": "bypassPermissions" } },
-  "lsp": { "eslint": { "binary": { "path_lookup": false } } },
-  "project_panel": { "hide_hidden": false, "hide_gitignore": false },
-  "context_servers": {
-    "mcp-server-context7": {
-      "enabled": true,
-      "settings": {
-        "context7_api_key": "REDACTED"
-      }
-    }
-  },
-  "icon_theme": { "mode": "system", "light": "Catppuccin Frappé", "dark": "Catppuccin Frappé" },
-  "base_keymap": "Cursor",
-  "ui_font_size": 16,
-  "buffer_font_size": 15,
-  "theme": { "mode": "system", "light": "Gruvbox Light", "dark": "One Dark" }
-}
-```
+The managed keymap provides macOS-style Super shortcuts while preserving terminal copy/paste behavior. Keep authentication and API keys out of the tracked settings.
 
 ---
 
@@ -944,25 +682,10 @@ vim.opt.relativenumber = false
 
 ## Summary Checklist
 
+- [ ] Install chezmoi and run `chezmoi init --apply git@github.com:shpitdev/my-nix.git`
+- [ ] Review `chezmoi diff`, apply the managed dotfiles, and verify Hyprland, xremap, voxtype, terminals, and agent instructions
 - [ ] Install terminal tools: `zsh-autosuggestions`, `zsh-fast-syntax-highlighting`, `zsh-history-substring-search`, `fzf`, `eza`, `bat`, `zoxide`, `atuin`, `starship`, `mise`
-- [ ] Add tool initializations to `~/.zshrc`
-- [ ] Add aliases to `~/.zshrc`
 - [ ] Install `xremap-wlroots-bin` and set up uinput permissions
-- [ ] Create xremap config and autostart
-- [ ] Add Hyprland bindings (Super+Q close, window movement)
-- [ ] Create hypr-move-window script
-- [ ] Add Hyprland zoom controls (cursor section in looknfeel.conf, bindings)
-- [ ] Add monitor scale presets (F13/F14/F15 for 4K scaling)
-- [ ] Create toggle-scratchpad-window script and add Super+Shift+S binding
-- [ ] Add pastel sage border for scratchpad windows in looknfeel.conf
-- [ ] Install hyprwhspr (`yay -S hyprwhspr && sudo pacman -S python-rich`)
-- [ ] Configure hyprwhspr and enable systemd service
-- [ ] Add optional hyprwhspr Spotify auto-pause helper
-- [ ] Configure Alacritty overrides (colors, tmux shell, keybinds)
-- [ ] Configure tmux (prefix, plugins)
-- [ ] Configure kitty (copy config + theme files)
-- [ ] Configure Ghostty with Mac-style keybindings
-- [ ] Configure Zed with Mac-style keybindings
-- [ ] Configure Zed global settings (remember to add your Context7 API key)
+- [ ] Keep Zed credentials local; never add them to the managed settings
 - [ ] Configure VS Code shift+enter binding
 - [ ] Verify llama.cpp serve helper toggles Parakeet v3 CPU/GPU correctly
